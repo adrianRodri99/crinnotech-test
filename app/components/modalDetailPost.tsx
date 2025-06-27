@@ -39,10 +39,10 @@ export default function ModalDetailPost({
       hideCloseButton={true}
       classNames={{
         backdrop: "bg-black/50 backdrop-blur-sm",
-        base: "border-gray-200 bg-white",
-        header: "border-b border-gray-200",
-        body: "py-6",
-        footer: "border-t border-gray-200",
+        base: "border-0 bg-white shadow-xl rounded-2xl mx-4 sm:mx-8",
+        header: "border-b border-gray-200 bg-white px-8 py-4",
+        body: "px-8 py-6",
+        footer: "border-t border-gray-200 bg-gray-50/50 px-8 py-4",
       }}
     >
       <ModalContent>
