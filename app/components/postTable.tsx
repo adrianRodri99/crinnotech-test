@@ -10,37 +10,70 @@ import {
   Input,
   Spinner,
 } from "@nextui-org/react";
-import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import { usePosts } from "../hooks/usePosts";
+import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus } from "lucide-react";
+import { usePosts, useDeletePost } from "../hooks/usePosts";
 import { useState } from "react";
+import { Post } from "../types/post";
 import ModalDetailPost from "./modalDetailPost";
+import ModalCreatePost from "./modalCreatePost";
 
 export default function PostTable() {
-  const { posts, page, setPage, limit, setLimit, loading, searchQuery, handleSearch } = usePosts(
+  const { posts, page, setPage, limit, setLimit, loading, searchQuery, handleSearch, refetch } = usePosts(
     1,
     5
   );
+  const { remove, loading: deleteLoading } = useDeletePost();
+  
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [postToEdit, setPostToEdit] = useState<Post | null>(null);
 
-  const handleEdit = (postId: number) => {
-    console.log("Editando post:", postId);
+  const handleEdit = (post: Post) => {
+    console.log("Editando post:", post.id);
+    setPostToEdit(post);
+    setIsCreateModalOpen(true);
   };
 
-  const handleDelete = (postId: number) => {
+  const handleDelete = async (postId: number) => {
     console.log("Eliminando post:", postId);
+    if (window.confirm("¿Estás seguro de que quieres eliminar este post?")) {
+      try {
+        await remove(postId);
+        await refetch(); // Refrescar la lista
+      } catch (error) {
+        console.error("Error al eliminar post:", error);
+      }
+    }
   };
 
   const handleViewDetails = (postId: number) => {
     console.log("Opening modal for post:", postId);
     setSelectedPostId(postId);
-    setIsModalOpen(true);
+    setIsDetailModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    console.log("Closing modal");
-    setIsModalOpen(false);
+  const handleCloseDetailModal = () => {
+    console.log("Closing detail modal");
+    setIsDetailModalOpen(false);
     setSelectedPostId(null);
+  };
+
+  const handleOpenCreateModal = () => {
+    console.log("Opening create modal");
+    setPostToEdit(null);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    console.log("Closing create modal");
+    setIsCreateModalOpen(false);
+    setPostToEdit(null);
+  };
+
+  const handleCreateSuccess = async () => {
+    console.log("Post created/updated successfully");
+    await refetch(); // Refrescar la lista
   };
 
   const limitOptions = [
@@ -60,8 +93,8 @@ export default function PostTable() {
         <p className="text-gray-600">Gestiona y visualiza todos los posts</p>
       </div>
 
-      {/* Search Bar */}
-      <div className="mb-6">
+      {/* Search Bar and Create Button */}
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm w-full sm:w-4/12">
           <Search className="text-gray-400 ml-3" size={18} />
           <Input
@@ -74,6 +107,16 @@ export default function PostTable() {
               inputWrapper: 'ring-0 focus:ring-0 focus-visible:ring-0 outline-none focus:outline-none',
             }}
           />
+        </div>
+
+        <div
+          onClick={handleOpenCreateModal}
+          className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer rounded-md shadow transition-colors"
+        >
+          <Plus size={20} className="text-black" />
+          <span className="text-black text-base font-semibold">
+            <span className="hidden sm:inline">Crear Post</span>
+          </span>
         </div>
       </div>
 
@@ -152,7 +195,7 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
-                        onClick={() => handleEdit(post.id)}
+                        onClick={() => handleEdit(post)}
                         className="text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
                         <Edit3 size={14} />
@@ -161,6 +204,8 @@ export default function PostTable() {
                         size="sm"
                         variant="light"
                         onClick={() => handleDelete(post.id)}
+                        isLoading={deleteLoading}
+                        isDisabled={deleteLoading}
                         className="text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
                         <Trash2 size={14} />
@@ -242,11 +287,18 @@ export default function PostTable() {
         </div>
       )}
 
-      {/* Modal for Post Details */}
+      {/* Modals */}
       <ModalDetailPost
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
         postId={selectedPostId}
+      />
+      
+      <ModalCreatePost
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        onSuccess={handleCreateSuccess}
+        postToEdit={postToEdit}
       />
       
       

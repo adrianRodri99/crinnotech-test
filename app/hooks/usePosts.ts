@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
 
 import { Post } from '../types/post';
-import { deletePost, getPostById, getPosts, searchPosts, updatePost } from '../services/postServices';
+import { createPost, deletePost, getPostById, getPosts, searchPosts, updatePost } from '../services/postServices';
 
 export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -54,6 +54,7 @@ export const usePosts = (initialPage = 1, initialLimit = 10) => {
     loading,
     searchQuery,
     handleSearch,
+    refetch: fetchPosts, // Añadir función de refetch
   };
 };
 
@@ -91,6 +92,27 @@ export const useUpdatePost = () => {
   };
 
   return { submitUpdate, loading };
+};
+
+export const useCreatePost = () => {
+  const [loading, setLoading] = useState(false);
+
+  const create = async (data: { title: string; body: string; userId: number }) => {
+    setLoading(true);
+    try {
+      const newPost = await createPost(data as Post);
+      // toast.success('Post creado correctamente');
+      return newPost;
+    } catch (err) {
+      console.error('Error al crear el post:', err);
+      // toast.error('Error al crear el post');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { create, loading };
 };
 
 export const useDeletePost = () => {

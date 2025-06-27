@@ -53,10 +53,11 @@ export default function ModalDetailPost({
           <Button
             isIconOnly
             variant="light"
-            onPress={onClose}
-            className="text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+            onClick={onClose}
+            isDisabled={loading}
+            className="flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-200 rounded-lg h-10 w-10 transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </Button>
         </ModalHeader>
 
