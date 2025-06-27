@@ -10,14 +10,18 @@ import {
   Input,
   Spinner,
 } from "@nextui-org/react";
-import { Search, Edit3, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { usePosts } from "../hooks/usePosts";
+import { useState } from "react";
+import ModalDetailPost from "./modalDetailPost";
 
 export default function PostTable() {
   const { posts, page, setPage, limit, setLimit, loading, searchQuery, handleSearch } = usePosts(
     1,
     5
   );
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleEdit = (postId: number) => {
     console.log("Editando post:", postId);
@@ -25,6 +29,18 @@ export default function PostTable() {
 
   const handleDelete = (postId: number) => {
     console.log("Eliminando post:", postId);
+  };
+
+  const handleViewDetails = (postId: number) => {
+    console.log("Opening modal for post:", postId);
+    setSelectedPostId(postId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log("Closing modal");
+    setIsModalOpen(false);
+    setSelectedPostId(null);
   };
 
   const limitOptions = [
@@ -128,6 +144,14 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
+                        onClick={() => handleViewDetails(post.id)}
+                        className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
+                      >
+                        <Eye size={14} />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="light"
                         onClick={() => handleEdit(post.id)}
                         className="text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
@@ -217,6 +241,15 @@ export default function PostTable() {
           </div>
         </div>
       )}
+
+      {/* Modal for Post Details */}
+      <ModalDetailPost
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        postId={selectedPostId}
+      />
+      
+      
     </div>
   );
 }

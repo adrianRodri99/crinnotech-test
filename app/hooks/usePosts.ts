@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useDebounce } from 'use-debounce';
+
 import { Post } from '../types/post';
-import { getPosts, searchPosts } from '../services/postServices';
+import { deletePost, getPostById, getPosts, searchPosts, updatePost } from '../services/postServices';
 
 export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -55,3 +56,59 @@ export const usePosts = (initialPage = 1, initialLimit = 10) => {
     handleSearch,
   };
 };
+
+export const usePostById = (id: number | null) => {
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    getPostById(id).then(data => {
+      setPost(data);
+      setLoading(false);
+    });
+  }, [id]);
+
+  return { post, loading };
+};
+
+export const useUpdatePost = () => {
+  const [loading, setLoading] = useState(false);
+
+  const submitUpdate = async (id: number, data: { title: string; body: string }) => {
+    setLoading(true);
+    try {
+      await updatePost(id, data);
+      // toast.success('Post actualizado correctamente');
+    } catch (err) {
+      console.log('error al actualizar el post:', err);
+      
+      // toast.error('Error al actualizar el post');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { submitUpdate, loading };
+};
+
+export const useDeletePost = () => {
+  const [loading, setLoading] = useState(false);
+
+  const remove = async (id: number) => {
+    setLoading(true);
+    try {
+      await deletePost(id);
+      // toast.success('Post eliminado');
+    } catch (err) {
+      console.error('Error al eliminar el post:', err);
+      // toast.error('Error al eliminar');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { remove, loading };
+};
+
