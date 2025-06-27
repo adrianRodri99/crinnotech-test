@@ -10,11 +10,11 @@ import {
   Input,
   Spinner,
 } from "@nextui-org/react";
-import { Search, Edit3, Trash2 } from "lucide-react";
+import { Search, Edit3, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePosts } from "../hooks/usePosts";
 
 export default function PostTable() {
-  const { posts, page, setPage, loading, searchQuery, handleSearch } = usePosts(
+  const { posts, page, setPage, limit, setLimit, loading, searchQuery, handleSearch } = usePosts(
     1,
     5
   );
@@ -27,6 +27,15 @@ export default function PostTable() {
     console.log("Eliminando post:", postId);
   };
 
+  const limitOptions = [
+    { value: "5", label: "5 por página" },
+    { value: "10", label: "10 por página" },
+    { value: "15", label: "15 por página" },
+    { value: "20", label: "20 por página" },
+    { value: "50", label: "50 por página" },
+    { value: "100", label: "100 por página" },
+  ];
+
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
       {/* Header - Always visible */}
@@ -35,19 +44,21 @@ export default function PostTable() {
         <p className="text-gray-600">Gestiona y visualiza todos los posts</p>
       </div>
 
-      {/* Search Bar - Always visible */}
-      <div className="mb-6 flex items-center bg-white border border-gray-200 rounded-lg shadow-sm w-4/12">
-        <Search className="text-gray-400 ml-3" size={18} />
-        <Input
-          placeholder="Buscar posts..."
-          value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="max-w-md"
-          classNames={{
-            input: "text-black py-2 px-4 outline-none focus:outline-none",
-            inputWrapper: 'ring-0 focus:ring-0 focus-visible:ring-0 outline-none focus:outline-none',
-          }}
-        />
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm w-full sm:w-4/12">
+          <Search className="text-gray-400 ml-3" size={18} />
+          <Input
+            placeholder="Buscar posts..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="max-w-md"
+            classNames={{
+              input: "text-black py-2 px-4 outline-none focus:outline-none",
+              inputWrapper: 'ring-0 focus:ring-0 focus-visible:ring-0 outline-none focus:outline-none',
+            }}
+          />
+        </div>
       </div>
 
       {/* Table Container */}
@@ -139,34 +150,70 @@ export default function PostTable() {
         )}
       </div>
 
-      {/* Pagination - Only show when not loading */}
+      {/* Enhanced Pagination with Limit Selector - Only show when not loading */}
       {!loading && (
-        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
-          <div className="flex items-center">
-            <span className="text-sm text-gray-600">
-              Mostrando {posts.length} posts en la página {page}
-            </span>
+        <div className="flex flex-col space-y-4 mt-6">
+          {/* Limit Selector */}
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600 font-medium">Mostrar:</span>
+              <div className="relative">
+                <select
+                  value={limit}
+                  onChange={(e) => setLimit(parseInt(e.target.value))}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 cursor-pointer shadow-sm"
+                >
+                  {limitOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <ChevronRight size={14} className="text-gray-400 rotate-90" />
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button
-              size="sm"
-              variant="bordered"
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              isDisabled={page === 1}
-              className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors"
-            >
-              Anterior
-            </Button>
-            <span className="text-sm font-medium text-black px-3">{page}</span>
-            <Button
-              size="sm"
-              variant="bordered"
-              onClick={() => setPage((p) => p + 1)}
-              isDisabled={posts.length < 5}
-              className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors"
-            >
-              Siguiente
-            </Button>
+
+          {/* Navigation Controls */}
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="flex items-center text-sm text-gray-600 order-2 lg:order-1">
+              <span>
+                Mostrando {posts.length} posts en la página {page}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 order-1 lg:order-2">
+              <Button
+                size="sm"
+                variant="bordered"
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                isDisabled={page === 1}
+                className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors flex items-center gap-1"
+              >
+                <ChevronLeft size={16} />
+                <span className="hidden sm:inline">Anterior</span>
+              </Button>
+              
+              <div className="flex items-center gap-2 mx-2">
+                <span className="text-sm text-gray-500">Página</span>
+                <div className="flex items-center justify-center min-w-[32px] h-8 bg-black text-white text-sm font-medium rounded-md px-2">
+                  {page}
+                </div>
+              </div>
+              
+              <Button
+                size="sm"
+                variant="bordered"
+                onClick={() => setPage((p) => p + 1)}
+                isDisabled={posts.length < limit}
+                className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors flex items-center gap-1"
+              >
+                <span className="hidden sm:inline">Siguiente</span>
+                <ChevronRight size={16} />
+              </Button>
+            </div>
           </div>
         </div>
       )}

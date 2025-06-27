@@ -3,9 +3,10 @@ import { useDebounce } from 'use-debounce';
 import { Post } from '../types/post';
 import { getPosts, searchPosts } from '../services/postServices';
 
-export const usePosts = (initialPage = 1, limit = 10) => {
+export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -38,10 +39,17 @@ export const usePosts = (initialPage = 1, limit = 10) => {
     }
   };
 
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1); // Reset to first page when changing limit
+  };
+
   return {
     posts,
     page,
     setPage,
+    limit,
+    setLimit: handleLimitChange,
     loading,
     searchQuery,
     handleSearch,
