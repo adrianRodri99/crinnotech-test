@@ -18,7 +18,7 @@ interface ConfirmDeleteModalProps {
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
-  postTitle?: string; // Para mostrar el título del post a eliminar
+  postTitle?: string;
 }
 
 export default function ConfirmDeleteModal({

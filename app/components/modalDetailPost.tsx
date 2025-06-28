@@ -83,7 +83,7 @@ export default function ModalDetailPost({
                 </div>
               </div>
 
-              {/* Title */}
+              
               <div>
                 <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
                   TÍTULO
@@ -95,7 +95,7 @@ export default function ModalDetailPost({
                 </div>
               </div>
 
-              {/* Content */}
+              
               <div>
                 <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
                   CONTENIDO

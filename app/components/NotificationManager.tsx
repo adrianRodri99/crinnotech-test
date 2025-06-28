@@ -6,7 +6,6 @@ import { X, CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 export default function NotificationManager() {
   const { notifications, hideNotification } = useNotifications();
 
-  // Auto-hide notifications with duration
   useEffect(() => {
     notifications.forEach(notification => {
       if (notification.duration) {

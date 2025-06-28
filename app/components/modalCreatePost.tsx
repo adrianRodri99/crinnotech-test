@@ -19,8 +19,8 @@ import { Post } from "../types/post";
 interface ModalCreatePostProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void; // Callback para refrescar la tabla
-  postToEdit?: Post | null; // Si existe, es edición; si no, es creación
+  onSuccess: () => void; 
+  postToEdit?: Post | null;
 }
 
 interface FormData {
@@ -34,10 +34,10 @@ export default function ModalCreatePost({
   onSuccess,
   postToEdit,
 }: ModalCreatePostProps) {
-  // ✅ Usar Redux para crear y actualizar posts
+  
   const { createNewPost, updateExistingPost } = usePostsRedux();
   
-  // Estados locales para loading específicos del modal
+  
   const [createLoading, setCreateLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   
@@ -62,7 +62,7 @@ export default function ModalCreatePost({
   const loading = createLoading || updateLoading;
   const titleLength = watch("title")?.length || 0;
 
-  // Cargar datos del post a editar cuando se abre el modal
+  
   useEffect(() => {
     if (isOpen && postToEdit) {
       setValue("title", postToEdit.title);
@@ -78,14 +78,14 @@ export default function ModalCreatePost({
   const onSubmit = async (data: FormData) => {
     try {
       if (isEditing && postToEdit) {
-        // ✅ Usar Redux para actualizar
+        
         setUpdateLoading(true);
         await updateExistingPost(postToEdit.id, {
           title: data.title,
           body: data.body,
         });
       } else {
-        // ✅ Usar Redux para crear
+        
         setCreateLoading(true);
         await createNewPost({
           title: data.title,
@@ -94,12 +94,12 @@ export default function ModalCreatePost({
         });
       }
       
-      onSuccess(); // Refrescar la tabla
-      onClose(); // Cerrar modal
+      onSuccess(); 
+      onClose(); 
     } catch (error) {
       console.error("Error al guardar post:", error);
     } finally {
-      // Resetear loading states
+
       setCreateLoading(false);
       setUpdateLoading(false);
     }

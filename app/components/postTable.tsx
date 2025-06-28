@@ -10,7 +10,7 @@ import {
   Input,
   Spinner,
 } from "@heroui/react";
-import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus, ArrowDown, ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from 'use-debounce';
 import { Post } from "../types/post";
@@ -20,16 +20,13 @@ import ModalCreatePost from "./modalCreatePost";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 export default function PostTable() {
-  // Redux hooks
+
   const { 
     posts, 
-    // selectedPost, 
     loadPosts, 
     removePost, 
-    // selectPost 
   } = usePostsRedux();
-  
-  // Estado local para UI (estos podrían ir en Redux también)
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(true);
@@ -40,20 +37,19 @@ export default function PostTable() {
   const [sortField, setSortField] = useState<keyof Post | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
-  // Estado local mínimo para operaciones específicas
+
   const [deleteLoading, setDeleteLoading] = useState(false);
   
-  // Estado para modales
+
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [postToEdit, setPostToEdit] = useState<Post | null>(null);
   
-  // Estado para modal de confirmación de eliminación
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
-  // Función para ordenar posts
   const sortPosts = (posts: Post[]) => {
     if (!sortField) return posts;
     
@@ -75,10 +71,8 @@ export default function PostTable() {
     });
   };
 
-  // Posts ordenados
   const sortedPosts = sortPosts(posts);
 
-  // Cargar posts cuando cambian los parámetros
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -88,7 +82,6 @@ export default function PostTable() {
     fetchData();
   }, [page, limit, debouncedSearchQuery, loadPosts]);
 
-  // Funciones de manejo
   const handleEdit = (post: Post) => {
     console.log("Editando post:", post.id);
     setPostToEdit(post);
@@ -107,7 +100,7 @@ export default function PostTable() {
     try {
       setDeleteLoading(true);
       await removePost(postToDelete.id);
-      // Los posts se actualizan automáticamente en Redux
+
       setIsDeleteModalOpen(false);
       setPostToDelete(null);
     } catch (error) {
@@ -122,26 +115,27 @@ export default function PostTable() {
     setPostToDelete(null);
   };
 
-  // Función para manejar el ordenamiento
   const handleSort = (field: keyof Post) => {
     if (sortField === field) {
-      // Si ya está ordenado por este campo, cambiar dirección
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
-      // Si es un campo nuevo, ordenar ascendente
       setSortField(field);
       setSortDirection('asc');
     }
   };
 
-  // Función para obtener el icono de ordenamiento
   const getSortIcon = (field: keyof Post) => {
     if (sortField !== field) {
-      return <ChevronUp className="opacity-30" size={14} />;
+      return (
+        <span className="flex flex-col items-center opacity-30">
+          <ArrowUp size={10} className="mb-0.5" />
+          <ArrowDown size={10} />
+        </span>
+      );
     }
-    return sortDirection === 'asc' 
-      ? <ChevronUp className="text-blue-600" size={14} />
-      : <ChevronDown className="text-blue-600" size={14} />;
+    return sortDirection === 'asc'
+      ? <ArrowUp className="text-blue-600" size={14} />
+      : <ArrowDown className="text-blue-600" size={14} />;
   };
 
   const handleViewDetails = (postId: number) => {
@@ -183,7 +177,7 @@ export default function PostTable() {
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1); // Reset to first page when changing limit
+    setPage(1);
   };
 
   const limitOptions = [
@@ -197,13 +191,13 @@ export default function PostTable() {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-6">
-      {/* Header - Always visible */}
+      
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-black mb-2">Posts</h1>
         <p className="text-gray-600">Gestiona y visualiza todos los posts</p>
       </div>
 
-      {/* Search Bar and Create Button */}
+
       <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm w-full sm:w-4/12">
           <Search className="text-gray-400 ml-3" size={18} />
@@ -230,7 +224,6 @@ export default function PostTable() {
         </Button>
       </div>
 
-      {/* Table Container */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden min-h-[400px] relative">
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white z-10">
@@ -361,10 +354,9 @@ export default function PostTable() {
         )}
       </div>
 
-      {/* Enhanced Pagination with Limit Selector - Only show when not loading */}
       {!loading && (
         <div className="flex flex-col space-y-4 mt-6">
-          {/* Limit Selector */}
+
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600 font-medium">Mostrar:</span>
@@ -387,15 +379,14 @@ export default function PostTable() {
             </div>
           </div>
 
-          {/* Navigation Controls */}
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="flex items-center text-sm text-gray-600 order-2 lg:order-1">
               <span>
                 Mostrando {sortedPosts.length} posts en la página {page}
                 {sortField && (
-                  <span className="ml-2 text-blue-600 text-xs">
-                    (ordenado por {sortField === 'userId' ? 'usuario' : sortField === 'title' ? 'título' : 'contenido'} {sortDirection === 'asc' ? '↑' : '↓'})
-                  </span>
+                    <span className="ml-2 text-blue-600 text-xs">
+                    (ordenado por {sortField === 'userId' ? 'usuario' : sortField === 'title' ? 'título' : 'contenido'} {sortDirection === 'asc' ? 'ascendentemente' : 'descendentemente'})
+                    </span>
                 )}
               </span>
             </div>
@@ -434,7 +425,6 @@ export default function PostTable() {
         </div>
       )}
 
-      {/* Modals */}
       <ModalDetailPost
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetailModal}
@@ -448,7 +438,6 @@ export default function PostTable() {
         postToEdit={postToEdit}
       />
 
-      {/* Modal de confirmación para eliminar */}
       <ConfirmDeleteModal
         isOpen={isDeleteModalOpen}
         onClose={handleCancelDelete}
