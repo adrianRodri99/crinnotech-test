@@ -165,11 +165,17 @@ export default function ModalCreatePost({
             {!loading && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-1">
                     <label className="text-sm font-medium text-gray-700">
                       Título del Post *
                     </label>
-                    <span className={`text-xs ${titleLength > 50 ? 'text-red-500' : 'text-gray-400'}`}>
+                    <span className={`text-xs font-medium ${
+                      titleLength > 50 
+                        ? 'text-red-500' 
+                        : titleLength > 40 
+                        ? 'text-orange-500' 
+                        : 'text-gray-400'
+                    }`}>
                       {titleLength}/50
                     </span>
                   </div>
@@ -178,16 +184,15 @@ export default function ModalCreatePost({
                       required: "El título es requerido",
                       maxLength: {
                         value: 50,
-                        message: "El título no puede tener más de 50 caracteres"
+                        message: "El título no puede exceder los 50 caracteres"
                       },
                       minLength: {
                         value: 3,
                         message: "El título debe tener al menos 3 caracteres"
                       }
                     })}
-                    placeholder="Ingresa un título llamativo y descriptivo"
+                    placeholder="Escribe un título atractivo para tu post"
                     isInvalid={!!errors.title}
-                    errorMessage={errors.title?.message}
                     variant="bordered"
                     size="lg"
                     classNames={{
@@ -197,33 +202,42 @@ export default function ModalCreatePost({
                       }`,
                     }}
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {errors.title.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                        Contenido del Post *
-                    </label>
-                    <Textarea
-                        {...register("body", {
-                            required: "El contenido es requerido",
-                            minLength: {
-                                value: 10,
-                                message: "El contenido debe tener al menos 10 caracteres"
-                            }
-                        })}
-                        placeholder="Escribe aquí el contenido completo de tu post. Puedes usar múltiples párrafos para organizar mejor la información..."
-                        isInvalid={!!errors.body}
-                        errorMessage={errors.body?.message}
-                        variant="bordered"
-                        minRows={6}
-                        maxRows={12}
-                        classNames={{
-                            input: "bg-transparent border-0 p-0 text-sm text-gray-700 leading-relaxed shadow-none",
-                            inputWrapper: `bg-transparent border-0 ring-0 focus:ring-0 focus-visible:ring-0 outline-none ${
-                                errors.body ? 'border-red-500' : ''
-                            }`,
-                        }}
-                    />
+                  <label className="text-sm font-medium text-gray-700">
+                    Contenido del Post *
+                  </label>
+                  <Textarea
+                    {...register("body", {
+                      required: "El contenido es requerido",
+                      minLength: {
+                        value: 10,
+                        message: "El contenido debe tener al menos 10 caracteres"
+                      }
+                    })}
+                    placeholder="Escribe aquí el contenido completo de tu post. Puedes incluir detalles, descripción y toda la información relevante..."
+                    isInvalid={!!errors.body}
+                    variant="bordered"
+                    minRows={6}
+                    maxRows={12}
+                    classNames={{
+                      input: "text-black py-2 px-4 outline-none focus:outline-none",
+                      inputWrapper: `ring-0 focus:ring-0 focus-visible:ring-0 outline-none focus:outline-none ${
+                        errors.body ? 'border-red-500' : ''
+                      }`,
+                    }}
+                  />
+                  {errors.body && (
+                    <p className="text-red-500 text-xs mt-1 ml-1">
+                      {errors.body.message}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
