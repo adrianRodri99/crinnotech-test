@@ -10,7 +10,7 @@ import {
   Input,
   Spinner,
 } from "@heroui/react";
-import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus } from "lucide-react";
+import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus, ChevronUp, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from 'use-debounce';
 import { Post } from "../types/post";
@@ -36,6 +36,10 @@ export default function PostTable() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   
+  // Estado para ordenamiento
+  const [sortField, setSortField] = useState<keyof Post | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  
   // Estado local mínimo para operaciones específicas
   const [deleteLoading, setDeleteLoading] = useState(false);
   
@@ -48,6 +52,31 @@ export default function PostTable() {
   // Estado para modal de confirmación de eliminación
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<Post | null>(null);
+
+  // Función para ordenar posts
+  const sortPosts = (posts: Post[]) => {
+    if (!sortField) return posts;
+    
+    return [...posts].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+      
+      // Convertir a string para comparación consistente
+      if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+      if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+      
+      if (aValue < bValue) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  // Posts ordenados
+  const sortedPosts = sortPosts(posts);
 
   // Cargar posts cuando cambian los parámetros
   useEffect(() => {
@@ -93,6 +122,28 @@ export default function PostTable() {
     setPostToDelete(null);
   };
 
+  // Función para manejar el ordenamiento
+  const handleSort = (field: keyof Post) => {
+    if (sortField === field) {
+      // Si ya está ordenado por este campo, cambiar dirección
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Si es un campo nuevo, ordenar ascendente
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Función para obtener el icono de ordenamiento
+  const getSortIcon = (field: keyof Post) => {
+    if (sortField !== field) {
+      return <ChevronUp className="opacity-30" size={14} />;
+    }
+    return sortDirection === 'asc' 
+      ? <ChevronUp className="text-blue-600" size={14} />
+      : <ChevronDown className="text-blue-600" size={14} />;
+  };
+
   const handleViewDetails = (postId: number) => {
     console.log("Opening modal for post:", postId);
     setSelectedPostId(postId);
@@ -119,8 +170,6 @@ export default function PostTable() {
 
   const handleCreateSuccess = async () => {
     console.log("Post created/updated successfully");
-    // Ya no es necesario recargar manualmente, Redux se actualiza automáticamente
-    // Solo cerramos el modal
     setIsCreateModalOpen(false);
     setPostToEdit(null);
   };
@@ -128,7 +177,7 @@ export default function PostTable() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query !== searchQuery) {
-      setPage(1); // Reset to first page when searching
+      setPage(1);
     }
   };
 
@@ -199,9 +248,32 @@ export default function PostTable() {
             }}
           >
             <TableHeader>
-              <TableColumn className="py-4 px-6">TÍTULO</TableColumn>
               <TableColumn className="py-4 px-6 hidden sm:table-cell">
-                CONTENIDO
+                <button
+                  onClick={() => handleSort('userId')}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer font-semibold"
+                >
+                  USUARIO
+                  {getSortIcon('userId')}
+                </button>
+              </TableColumn>
+              <TableColumn className="py-4 px-6">
+                <button
+                  onClick={() => handleSort('title')}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer font-semibold"
+                >
+                  TÍTULO
+                  {getSortIcon('title')}
+                </button>
+              </TableColumn>
+              <TableColumn className="py-4 px-6 hidden sm:table-cell">
+                <button
+                  onClick={() => handleSort('body')}
+                  className="flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer font-semibold"
+                >
+                  CONTENIDO
+                  {getSortIcon('body')}
+                </button>
               </TableColumn>
               <TableColumn className="py-4 px-6 text-center w-32">
                 ACCIONES
@@ -223,11 +295,16 @@ export default function PostTable() {
                 </div>
               }
             >
-              {posts.map((post) => (
+              {sortedPosts.map((post) => (
                 <TableRow
                   key={post.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
+                  <TableCell className="py-4 px-6 hidden sm:table-cell">
+                    <p className="text-gray-700 text-sm max-w-xs line-clamp-2">
+                      Usuario: {post.userId}
+                    </p>
+                  </TableCell>
                   <TableCell className="py-4 px-6">
                     <div className="flex flex-col">
                       <p className="font-medium text-black text-sm leading-5">
@@ -238,6 +315,7 @@ export default function PostTable() {
                       </p>
                     </div>
                   </TableCell>
+                  
                   <TableCell className="py-4 px-6 hidden sm:table-cell">
                     <p className="text-gray-700 text-sm max-w-xs line-clamp-2">
                       {post.body.slice(0, 120)}...
@@ -313,7 +391,12 @@ export default function PostTable() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="flex items-center text-sm text-gray-600 order-2 lg:order-1">
               <span>
-                Mostrando {posts.length} posts en la página {page}
+                Mostrando {sortedPosts.length} posts en la página {page}
+                {sortField && (
+                  <span className="ml-2 text-blue-600 text-xs">
+                    (ordenado por {sortField === 'userId' ? 'usuario' : sortField === 'title' ? 'título' : 'contenido'} {sortDirection === 'asc' ? '↑' : '↓'})
+                  </span>
+                )}
               </span>
             </div>
             
@@ -340,7 +423,7 @@ export default function PostTable() {
                 size="sm"
                 variant="bordered"
                 onPress={() => setPage((p) => p + 1)}
-                isDisabled={posts.length < limit}
+                isDisabled={sortedPosts.length < limit}
                 className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors flex items-center gap-1"
               >
                 <span className="hidden sm:inline">Siguiente</span>
