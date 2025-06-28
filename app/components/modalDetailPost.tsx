@@ -9,7 +9,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import { X, User, Calendar } from "lucide-react";
-import { usePostById } from "../hooks/usePosts";
+import { usePostDetails } from "../hooks/usePostModals";
 
 interface ModalDetailPostProps {
   isOpen: boolean;
@@ -22,7 +22,7 @@ export default function ModalDetailPost({
   onClose,
   postId,
 }: ModalDetailPostProps) {
-  const { post, loading } = usePostById(postId);
+  const { post, loading } = usePostDetails(postId);
 
   console.log("Modal state:", { isOpen, postId, post, loading });
 

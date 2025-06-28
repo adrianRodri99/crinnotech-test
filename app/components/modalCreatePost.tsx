@@ -11,9 +11,9 @@ import {
   Spinner,
 } from "@heroui/react";
 import { X, Save, Plus } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useCreatePost, useUpdatePost } from "../hooks/usePosts";
+import { usePostsRedux } from "../hooks/redux";
 import { Post } from "../types/post";
 
 interface ModalCreatePostProps {
@@ -34,8 +34,13 @@ export default function ModalCreatePost({
   onSuccess,
   postToEdit,
 }: ModalCreatePostProps) {
-  const { create, loading: createLoading } = useCreatePost();
-  const { submitUpdate, loading: updateLoading } = useUpdatePost();
+  // ✅ Usar Redux para crear y actualizar posts
+  const { createNewPost, updateExistingPost } = usePostsRedux();
+  
+  // Estados locales para loading específicos del modal
+  const [createLoading, setCreateLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  
   console.log("🎨 ModalCreatePost render - isOpen:", isOpen, "postToEdit:", postToEdit);
   
   const {
@@ -73,12 +78,16 @@ export default function ModalCreatePost({
   const onSubmit = async (data: FormData) => {
     try {
       if (isEditing && postToEdit) {
-        await submitUpdate(postToEdit.id, {
+        // ✅ Usar Redux para actualizar
+        setUpdateLoading(true);
+        await updateExistingPost(postToEdit.id, {
           title: data.title,
           body: data.body,
         });
       } else {
-        await create({
+        // ✅ Usar Redux para crear
+        setCreateLoading(true);
+        await createNewPost({
           title: data.title,
           body: data.body,
           userId: 1, // Siempre enviar userId como 1
@@ -89,6 +98,10 @@ export default function ModalCreatePost({
       onClose(); // Cerrar modal
     } catch (error) {
       console.error("Error al guardar post:", error);
+    } finally {
+      // Resetear loading states
+      setCreateLoading(false);
+      setUpdateLoading(false);
     }
   };
 

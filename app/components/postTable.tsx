@@ -23,17 +23,20 @@ export default function PostTable() {
   const { 
     posts, 
     // selectedPost, 
-    loadPosts, removePost, 
+    loadPosts, 
+    removePost, 
     // selectPost 
   } = usePostsRedux();
   
-  // Estado local para UI
+  // Estado local para UI (estos podrían ir en Redux también)
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(true);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
+  
+  // Estado local mínimo para operaciones específicas
+  const [deleteLoading, setDeleteLoading] = useState(false);
   
   // Estado para modales
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
@@ -99,8 +102,10 @@ export default function PostTable() {
 
   const handleCreateSuccess = async () => {
     console.log("Post created/updated successfully");
-    // Recargar posts después de crear/editar
-    await loadPosts(page, limit, debouncedSearchQuery);
+    // Ya no es necesario recargar manualmente, Redux se actualiza automáticamente
+    // Solo cerramos el modal
+    setIsCreateModalOpen(false);
+    setPostToEdit(null);
   };
 
   const handleSearch = (query: string) => {

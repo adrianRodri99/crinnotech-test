@@ -46,6 +46,16 @@ export const usePostsRedux = () => {
       const data = await getPosts(page, limit, searchQuery);
       
       dispatch(setPosts(data));
+
+      if(data.length === 0) {
+        dispatch(addNotification({
+          type: 'warning',
+          title: 'Sin resultados',
+          message: 'No se encontraron posts con los criterios de búsqueda',
+          duration: 3000
+        }));
+        return;
+      }
       
       dispatch(addNotification({
         type: 'success',
