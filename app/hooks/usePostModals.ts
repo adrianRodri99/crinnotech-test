@@ -4,7 +4,6 @@ import { getPostById } from '../services/postServices';
 import { Post } from '../types/post';
 import { addNotification } from '../store/slices/notificationSlice';
 
-// Hook para modal de detalles usando Redux
 export const usePostDetails = (postId: number | null) => {
   const dispatch = useAppDispatch();
   const [post, setPost] = useState<Post | null>(null);
@@ -41,7 +40,6 @@ export const usePostDetails = (postId: number | null) => {
   return { post, loading };
 };
 
-// Hook para modal de crear/editar usando Redux
 export const usePostForm = () => {
   const dispatch = useAppDispatch();
   const [createLoading, setCreateLoading] = useState(false);

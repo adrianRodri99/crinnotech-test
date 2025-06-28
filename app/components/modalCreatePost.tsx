@@ -34,12 +34,11 @@ export default function ModalCreatePost({
   onSuccess,
   postToEdit,
 }: ModalCreatePostProps) {
-  
+
   const { createNewPost, updateExistingPost } = usePostsRedux();
   
-  
-  const [createLoading, setCreateLoading] = useState(false);
-  const [updateLoading, setUpdateLoading] = useState(false);
+
+  const [loading, setLoading] = useState(false);
   
   console.log("🎨 ModalCreatePost render - isOpen:", isOpen, "postToEdit:", postToEdit);
   
@@ -59,7 +58,6 @@ export default function ModalCreatePost({
   });
 
   const isEditing = !!postToEdit;
-  const loading = createLoading || updateLoading;
   const titleLength = watch("title")?.length || 0;
 
   
@@ -77,20 +75,20 @@ export default function ModalCreatePost({
 
   const onSubmit = async (data: FormData) => {
     try {
+      setLoading(true);
+      
       if (isEditing && postToEdit) {
-        
-        setUpdateLoading(true);
+        // ✅ Usar Redux para actualizar - incluye notificaciones automáticas
         await updateExistingPost(postToEdit.id, {
           title: data.title,
           body: data.body,
         });
       } else {
-        
-        setCreateLoading(true);
+
         await createNewPost({
           title: data.title,
           body: data.body,
-          userId: 1, // Siempre enviar userId como 1
+          userId: 1,
         });
       }
       
@@ -99,9 +97,7 @@ export default function ModalCreatePost({
     } catch (error) {
       console.error("Error al guardar post:", error);
     } finally {
-
-      setCreateLoading(false);
-      setUpdateLoading(false);
+      setLoading(false);
     }
   };
 

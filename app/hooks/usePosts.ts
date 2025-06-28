@@ -12,7 +12,7 @@ export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Debounce the search query
+  // Debounce
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
 
   const fetchPosts = useCallback(async () => {
@@ -35,13 +35,13 @@ export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query !== searchQuery) {
-      setPage(1); // Reset to first page when searching
+      setPage(1);
     }
   };
 
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
-    setPage(1); // Reset to first page when changing limit
+    setPage(1);
   };
 
   return {
@@ -53,7 +53,7 @@ export const usePosts = (initialPage = 1, initialLimit = 10) => {
     loading,
     searchQuery,
     handleSearch,
-    refetch: fetchPosts, // Añadir función de refetch
+    refetch: fetchPosts,
   };
 };
 

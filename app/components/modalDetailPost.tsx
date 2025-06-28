@@ -9,7 +9,11 @@ import {
   Spinner,
 } from "@heroui/react";
 import { X, User, Calendar } from "lucide-react";
-import { usePostDetails } from "../hooks/usePostModals";
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../hooks/redux';
+import { getPostById } from '../services/postServices';
+import { Post } from '../types/post';
+import { addNotification } from '../store/slices/notificationSlice';
 
 interface ModalDetailPostProps {
   isOpen: boolean;
@@ -22,7 +26,39 @@ export default function ModalDetailPost({
   onClose,
   postId,
 }: ModalDetailPostProps) {
-  const { post, loading } = usePostDetails(postId);
+  // ✅ Implementar lógica Redux directamente en el componente
+  const dispatch = useAppDispatch();
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!postId) {
+      setPost(null);
+      return;
+    }
+
+    const loadPost = async () => {
+      setLoading(true);
+      try {
+        const postData = await getPostById(postId);
+        setPost(postData);
+      } catch (error) {
+        console.error('Error loading post:', error);
+        
+        dispatch(addNotification({
+          type: 'error',
+          title: 'Error al cargar post',
+          message: 'No se pudo cargar los detalles del post',
+          duration: 5000
+        }));
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPost();
+  }, [postId, dispatch]);
 
   console.log("Modal state:", { isOpen, postId, post, loading });
 
@@ -71,7 +107,7 @@ export default function ModalDetailPost({
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Post Info */}
+
               <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <User size={16} />

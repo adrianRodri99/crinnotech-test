@@ -22,18 +22,14 @@ import {
 } from '../services/postServices';
 import { Post } from '../types/post';
 
-// Hook personalizado para useDispatch con tipos
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
-// Hook personalizado para useSelector con tipos
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-// Hook para manejar posts con Redux
 export const usePostsRedux = () => {
   const dispatch = useAppDispatch();
   const { posts, selectedPost } = useAppSelector(state => state.posts);
   
-  // Cargar posts desde la API
   const loadPosts = useCallback(async (page: number = 1, limit: number = 10, searchQuery?: string) => {
     try {
       dispatch(addNotification({
@@ -74,7 +70,6 @@ export const usePostsRedux = () => {
     }
   }, [dispatch]);
 
-  // Crear nuevo post
   const createNewPost = useCallback(async (postData: { title: string; body: string; userId: number }) => {
     try {
       const newPost = await createPost(postData as Post);
@@ -100,7 +95,6 @@ export const usePostsRedux = () => {
     }
   }, [dispatch]);
 
-  // Actualizar post existente
   const updateExistingPost = useCallback(async (id: number, postData: { title: string; body: string }) => {
     try {
       const updatedPost = await updatePostAPI(id, postData);
@@ -126,7 +120,6 @@ export const usePostsRedux = () => {
     }
   }, [dispatch]);
 
-  // Eliminar post
   const removePost = useCallback(async (id: number) => {
     try {
       await deletePostAPI(id);
@@ -150,7 +143,6 @@ export const usePostsRedux = () => {
     }
   }, [dispatch]);
 
-  // Seleccionar post para modal
   const selectPost = useCallback((post: Post | null) => {
     dispatch(setSelectedPost(post));
   }, [dispatch]);
@@ -166,7 +158,6 @@ export const usePostsRedux = () => {
   };
 };
 
-// Hook para manejar notificaciones
 export const useNotifications = () => {
   const dispatch = useAppDispatch();
   const notifications = useAppSelector(state => state.notifications.notifications);
