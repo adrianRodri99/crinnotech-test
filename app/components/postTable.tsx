@@ -9,7 +9,7 @@ import {
   Button,
   Input,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus } from "lucide-react";
 import { usePosts, useDeletePost } from "../hooks/usePosts";
 import { useState } from "react";
@@ -187,6 +187,7 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
+                        isIconOnly
                         onPress={() => handleViewDetails(post.id)}
                         className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
@@ -194,6 +195,7 @@ export default function PostTable() {
                       </Button>
                       <Button
                         size="sm"
+                        isIconOnly
                         variant="light"
                         onPress={() => handleEdit(post)}
                         className="text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
@@ -206,6 +208,7 @@ export default function PostTable() {
                         onPress={() => handleDelete(post.id)}
                         isLoading={deleteLoading}
                         isDisabled={deleteLoading}
+                        isIconOnly
                         className="text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
                         <Trash2 size={14} />
@@ -275,7 +278,7 @@ export default function PostTable() {
               <Button
                 size="sm"
                 variant="bordered"
-                onClick={() => setPage((p) => p + 1)}
+                onPress={() => setPage((p) => p + 1)}
                 isDisabled={posts.length < limit}
                 className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors flex items-center gap-1"
               >

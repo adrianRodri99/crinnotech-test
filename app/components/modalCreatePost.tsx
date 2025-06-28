@@ -9,7 +9,7 @@ import {
   Input,
   Textarea,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { X, Save, Plus } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -118,6 +118,7 @@ export default function ModalCreatePost({
         header: "border-b border-gray-200 bg-white px-8 py-4",
         body: "px-8 py-6",
         footer: "border-t border-gray-200 bg-gray-50/50 px-8 py-4",
+        wrapper: "z-[9999] fixed inset-0 flex items-center justify-center p-4",
       }}
     >
       <ModalContent>
@@ -142,7 +143,7 @@ export default function ModalCreatePost({
           <Button
             isIconOnly
             variant="light"
-            onClick={handleClose}
+            onPress={handleClose}
             isDisabled={loading}
             className="flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-200 rounded-lg h-10 w-10 transition-colors"
           >
@@ -248,7 +249,7 @@ export default function ModalCreatePost({
             <Button
               type="button"
               variant="bordered"
-              onClick={handleClose}
+              onPress={handleClose}
               isDisabled={loading}
               size="lg"
               className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium px-6 h-11 rounded-lg transition-all duration-200"

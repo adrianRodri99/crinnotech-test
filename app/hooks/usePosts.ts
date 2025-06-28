@@ -3,6 +3,7 @@ import { useDebounce } from 'use-debounce';
 
 import { Post } from '../types/post';
 import { createPost, deletePost, getPostById, getPosts, searchPosts, updatePost } from '../services/postServices';
+import { toast } from 'sonner';
 
 export const usePosts = (initialPage = 1, initialLimit = 10) => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -81,11 +82,11 @@ export const useUpdatePost = () => {
     setLoading(true);
     try {
       await updatePost(id, data);
-      // toast.success('Post actualizado correctamente');
+      toast.success('Post actualizado correctamente');
     } catch (err) {
       console.log('error al actualizar el post:', err);
       
-      // toast.error('Error al actualizar el post');
+      toast.error('Error al actualizar el post');
     } finally {
       setLoading(false);
     }
@@ -101,11 +102,11 @@ export const useCreatePost = () => {
     setLoading(true);
     try {
       const newPost = await createPost(data as Post);
-      // toast.success('Post creado correctamente');
+      toast.success('Post creado correctamente');
       return newPost;
     } catch (err) {
       console.error('Error al crear el post:', err);
-      // toast.error('Error al crear el post');
+      toast.error('Error al crear el post');
       throw err;
     } finally {
       setLoading(false);
@@ -122,10 +123,10 @@ export const useDeletePost = () => {
     setLoading(true);
     try {
       await deletePost(id);
-      // toast.success('Post eliminado');
+      toast.success('Post eliminado');
     } catch (err) {
       console.error('Error al eliminar el post:', err);
-      // toast.error('Error al eliminar');
+      toast.error('Error al eliminar');
     } finally {
       setLoading(false);
     }

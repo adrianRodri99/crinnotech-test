@@ -7,7 +7,7 @@ import {
   ModalFooter,
   Button,
   Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { X, User, Calendar } from "lucide-react";
 import { usePostById } from "../hooks/usePosts";
 
@@ -43,6 +43,7 @@ export default function ModalDetailPost({
         header: "border-b border-gray-200 bg-white px-8 py-4",
         body: "px-8 py-6",
         footer: "border-t border-gray-200 bg-gray-50/50 px-8 py-4",
+        wrapper: "z-[9999] fixed inset-0 flex items-center justify-center p-4",
       }}
     >
       <ModalContent>
@@ -53,7 +54,7 @@ export default function ModalDetailPost({
           <Button
             isIconOnly
             variant="light"
-            onClick={onClose}
+            onPress={onClose}
             isDisabled={loading}
             className="flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-200 rounded-lg h-10 w-10 transition-colors"
           >
