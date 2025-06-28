@@ -17,6 +17,7 @@ import { Post } from "../types/post";
 import { usePostsRedux } from "../hooks/redux";
 import ModalDetailPost from "./modalDetailPost";
 import ModalCreatePost from "./modalCreatePost";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 export default function PostTable() {
   // Redux hooks
@@ -43,6 +44,10 @@ export default function PostTable() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [postToEdit, setPostToEdit] = useState<Post | null>(null);
+  
+  // Estado para modal de confirmación de eliminación
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
   // Cargar posts cuando cambian los parámetros
   useEffect(() => {
@@ -61,19 +66,31 @@ export default function PostTable() {
     setIsCreateModalOpen(true);
   };
 
-  const handleDelete = async (postId: number) => {
-    console.log("Eliminando post:", postId);
-    if (window.confirm("¿Estás seguro de que quieres eliminar este post?")) {
-      try {
-        setDeleteLoading(true);
-        await removePost(postId);
-        // Los posts se actualizan automáticamente en Redux
-      } catch (error) {
-        console.error("Error al eliminar post:", error);
-      } finally {
-        setDeleteLoading(false);
-      }
+  const handleDelete = async (post: Post) => {
+    console.log("Solicitando eliminación de post:", post.id);
+    setPostToDelete(post);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!postToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      await removePost(postToDelete.id);
+      // Los posts se actualizan automáticamente en Redux
+      setIsDeleteModalOpen(false);
+      setPostToDelete(null);
+    } catch (error) {
+      console.error("Error al eliminar post:", error);
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setPostToDelete(null);
   };
 
   const handleViewDetails = (postId: number) => {
@@ -249,8 +266,8 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
-                        onPress={() => handleDelete(post.id)}
-                        isLoading={deleteLoading}
+                        onPress={() => handleDelete(post)}
+                        // isLoading={deleteLoading}
                         isDisabled={deleteLoading}
                         isIconOnly
                         className="text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
@@ -346,6 +363,19 @@ export default function PostTable() {
         onClose={handleCloseCreateModal}
         onSuccess={handleCreateSuccess}
         postToEdit={postToEdit}
+      />
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteLoading}
+        title="Eliminar Post"
+        message="¿Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer."
+        postTitle={postToDelete?.title}
+        confirmText="Eliminar Post"
+        cancelText="Cancelar"
       />
       
       
