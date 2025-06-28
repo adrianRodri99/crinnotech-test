@@ -109,15 +109,15 @@ export default function PostTable() {
           />
         </div>
 
-        <div
-          onClick={handleOpenCreateModal}
+        <Button
+          onPress={handleOpenCreateModal}
           className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer rounded-md shadow transition-colors"
         >
           <Plus size={20} className="text-black" />
           <span className="text-black text-base font-semibold">
             <span className="hidden sm:inline">Crear Post</span>
           </span>
-        </div>
+        </Button>
       </div>
 
       {/* Table Container */}
@@ -187,7 +187,7 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
-                        onClick={() => handleViewDetails(post.id)}
+                        onPress={() => handleViewDetails(post.id)}
                         className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
                         <Eye size={14} />
@@ -195,7 +195,7 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
-                        onClick={() => handleEdit(post)}
+                        onPress={() => handleEdit(post)}
                         className="text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
                       >
                         <Edit3 size={14} />
@@ -203,7 +203,7 @@ export default function PostTable() {
                       <Button
                         size="sm"
                         variant="light"
-                        onClick={() => handleDelete(post.id)}
+                        onPress={() => handleDelete(post.id)}
                         isLoading={deleteLoading}
                         isDisabled={deleteLoading}
                         className="text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 min-w-unit-8 h-8 rounded-md"
@@ -257,7 +257,7 @@ export default function PostTable() {
               <Button
                 size="sm"
                 variant="bordered"
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                onPress={() => setPage((p) => Math.max(p - 1, 1))}
                 isDisabled={page === 1}
                 className="border-gray-300 hover:border-gray-500 text-gray-700 hover:text-black transition-colors flex items-center gap-1"
               >

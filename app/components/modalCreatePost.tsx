@@ -36,6 +36,7 @@ export default function ModalCreatePost({
 }: ModalCreatePostProps) {
   const { create, loading: createLoading } = useCreatePost();
   const { submitUpdate, loading: updateLoading } = useUpdatePost();
+  console.log("🎨 ModalCreatePost render - isOpen:", isOpen, "postToEdit:", postToEdit);
   
   const {
     register,
@@ -103,7 +104,7 @@ export default function ModalCreatePost({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       size="4xl"
       scrollBehavior="inside"
       backdrop="blur"
