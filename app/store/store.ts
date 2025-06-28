@@ -7,6 +7,8 @@ export const store = configureStore({
     posts: postsReducer,
     notifications: notificationReducer,
   },
+  // Habilitar Redux DevTools en desarrollo
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type RootState = ReturnType<typeof store.getState>;

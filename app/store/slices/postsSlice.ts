@@ -1,6 +1,5 @@
-import { Post } from '@/app/types/post';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import { Post } from "@/app/types/post";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface PostsState {
   posts: Post[];
@@ -13,7 +12,7 @@ const initialState: PostsState = {
 };
 
 const postsSlice = createSlice({
-  name: 'posts',
+  name: "posts",
   initialState,
   reducers: {
     setPosts: (state, action: PayloadAction<Post[]>) => {
@@ -23,9 +22,9 @@ const postsSlice = createSlice({
       state.posts.unshift(action.payload);
     },
     updatePost: (state, action: PayloadAction<Post>) => {
-    state.posts = state.posts.map((p: Post): Post =>
-      p.id === action.payload.id ? action.payload : p
-    );
+      state.posts = state.posts.map(
+        (p: Post): Post => (p.id === action.payload.id ? action.payload : p)
+      );
     },
     deletePost: (state, action: PayloadAction<number>) => {
       state.posts = state.posts.filter((p: Post) => p.id !== action.payload);
@@ -36,12 +35,7 @@ const postsSlice = createSlice({
   },
 });
 
-export const {
-  setPosts,
-  addPost,
-  updatePost,
-  deletePost,
-  setSelectedPost,
-} = postsSlice.actions;
+export const { setPosts, addPost, updatePost, deletePost, setSelectedPost } =
+  postsSlice.actions;
 
 export default postsSlice.reducer;

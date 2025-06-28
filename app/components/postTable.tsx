@@ -11,24 +11,47 @@ import {
   Spinner,
 } from "@heroui/react";
 import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus } from "lucide-react";
-import { usePosts, useDeletePost } from "../hooks/usePosts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDebounce } from 'use-debounce';
 import { Post } from "../types/post";
+import { usePostsRedux } from "../hooks/redux";
 import ModalDetailPost from "./modalDetailPost";
 import ModalCreatePost from "./modalCreatePost";
 
 export default function PostTable() {
-  const { posts, page, setPage, limit, setLimit, loading, searchQuery, handleSearch, refetch } = usePosts(
-    1,
-    5
-  );
-  const { remove, loading: deleteLoading } = useDeletePost();
+  // Redux hooks
+  const { 
+    posts, 
+    // selectedPost, 
+    loadPosts, removePost, 
+    // selectPost 
+  } = usePostsRedux();
   
+  // Estado local para UI
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
+  
+  // Estado para modales
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [postToEdit, setPostToEdit] = useState<Post | null>(null);
 
+  // Cargar posts cuando cambian los parámetros
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await loadPosts(page, limit, debouncedSearchQuery);
+      setLoading(false);
+    };
+    fetchData();
+  }, [page, limit, debouncedSearchQuery, loadPosts]);
+
+  // Funciones de manejo
   const handleEdit = (post: Post) => {
     console.log("Editando post:", post.id);
     setPostToEdit(post);
@@ -39,10 +62,13 @@ export default function PostTable() {
     console.log("Eliminando post:", postId);
     if (window.confirm("¿Estás seguro de que quieres eliminar este post?")) {
       try {
-        await remove(postId);
-        await refetch(); // Refrescar la lista
+        setDeleteLoading(true);
+        await removePost(postId);
+        // Los posts se actualizan automáticamente en Redux
       } catch (error) {
         console.error("Error al eliminar post:", error);
+      } finally {
+        setDeleteLoading(false);
       }
     }
   };
@@ -73,7 +99,20 @@ export default function PostTable() {
 
   const handleCreateSuccess = async () => {
     console.log("Post created/updated successfully");
-    await refetch(); // Refrescar la lista
+    // Recargar posts después de crear/editar
+    await loadPosts(page, limit, debouncedSearchQuery);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query !== searchQuery) {
+      setPage(1); // Reset to first page when searching
+    }
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1); // Reset to first page when changing limit
   };
 
   const limitOptions = [
@@ -232,7 +271,7 @@ export default function PostTable() {
               <div className="relative">
                 <select
                   value={limit}
-                  onChange={(e) => setLimit(parseInt(e.target.value))}
+                  onChange={(e) => handleLimitChange(parseInt(e.target.value))}
                   className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 cursor-pointer shadow-sm"
                 >
                   {limitOptions.map((option) => (

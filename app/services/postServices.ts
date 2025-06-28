@@ -3,20 +3,16 @@ import { apiPost } from "./axiosInstance";
 
 export const getPosts = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  query?: string
 ): Promise<Post[]> => {
-  const res = await apiPost.get(`/posts?_page=${page}&_limit=${limit}`);
-  return res.data;
-};
-
-export const searchPosts = async (
-  query: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<Post[]> => {
-  const res = await apiPost.get(
-    `/posts?q=${query}&_page=${page}&_limit=${limit}`
-  );
+  const params = new URLSearchParams();
+  params.append("_page", page.toString());
+  params.append("_limit", limit.toString());
+  if (query) {
+    params.append("q", query);
+  }
+  const res = await apiPost.get(`/posts?${params.toString()}`);
   return res.data;
 };
 
