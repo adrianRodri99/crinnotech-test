@@ -121,14 +121,6 @@ export default function ModalCreatePost({
       hideCloseButton={true}
       isDismissable={!loading}
       isKeyboardDismissDisabled={loading}
-      classNames={{
-        backdrop: "bg-black/50 backdrop-blur-sm",
-        base: "border-0 bg-white shadow-xl rounded-2xl mx-4 sm:mx-8",
-        header: "border-b border-gray-200 bg-white px-8 py-4",
-        body: "px-8 py-6",
-        footer: "border-t border-gray-200 bg-gray-50/50 px-8 py-4",
-        wrapper: "z-[9999] fixed inset-0 flex items-center justify-center p-4",
-      }}
     >
       <ModalContent>
         <ModalHeader className="flex items-center justify-between">

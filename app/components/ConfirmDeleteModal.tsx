@@ -54,14 +54,6 @@ export default function ConfirmDeleteModal({
       hideCloseButton={true}
       isDismissable={!isLoading}
       isKeyboardDismissDisabled={isLoading}
-      classNames={{
-        backdrop: "bg-black/40 backdrop-blur-sm",
-        base: "border-0 bg-white shadow-lg rounded-4xl mx-4",
-        header: "border-b border-gray-200 bg-white px-6 py-3",
-        body: "px-6 py-4",
-        footer: "border-t border-gray-100 bg-white px-6 py-3",
-        wrapper: "z-[10000] fixed inset-0 flex items-center justify-center p-4",
-      }}
     >
       <ModalContent >
         <ModalHeader className="flex items-center justify-between">
