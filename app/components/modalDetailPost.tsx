@@ -100,7 +100,7 @@ export default function ModalDetailPost({
           ) : (
             <div className="space-y-6">
 
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg bg-gray-200">
+              <div className="flex items-center gap-4 p-4 rounded-lg bg-gray-200">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <User size={16} />
                   <span>Usuario {post.userId}</span>

@@ -77,19 +77,22 @@ export const usePostsRedux = () => {
       
       dispatch(addNotification({
         type: 'success',
-        title: 'Post creado',
-        message: 'El post se creó correctamente',
-        duration: 3000
+        title: 'Post creado exitosamente',
+        message: `"${newPost.title}" se creó correctamente`,
+        persistent: true,
       }));
       
       return newPost;
     } catch (error) {
       console.error('Error creating post:', error);
+      
+      // ✅ Notificación temporal para errores
       dispatch(addNotification({
         type: 'error',
         title: 'Error al crear post',
         message: 'No se pudo crear el post',
-        duration: 5000
+        duration: 5000,
+        persistent: false,
       }));
       throw error;
     }
@@ -102,19 +105,21 @@ export const usePostsRedux = () => {
       
       dispatch(addNotification({
         type: 'success',
-        title: 'Post actualizado',
-        message: 'Los cambios se guardaron correctamente',
-        duration: 3000
+        title: 'Post actualizado exitosamente',
+        message: `"${updatedPost.title}" se actualizó correctamente`,
+        persistent: true,
       }));
       
       return updatedPost;
     } catch (error) {
       console.error('Error updating post:', error);
+      
       dispatch(addNotification({
         type: 'error',
         title: 'Error al actualizar',
         message: 'No se pudieron guardar los cambios',
-        duration: 5000
+        duration: 5000,
+        persistent: false,
       }));
       throw error;
     }
@@ -122,26 +127,31 @@ export const usePostsRedux = () => {
 
   const removePost = useCallback(async (id: number) => {
     try {
+      const postToDelete = posts.find(p => p.id === id);
+      const postTitle = postToDelete?.title || 'Post';
+      
       await deletePostAPI(id);
       dispatch(deletePost(id));
       
       dispatch(addNotification({
         type: 'success',
-        title: 'Post eliminado',
-        message: 'El post se eliminó correctamente',
-        duration: 3000
+        title: 'Post eliminado exitosamente',
+        message: `"${postTitle}" se eliminó correctamente`,
+        persistent: true,
       }));
     } catch (error) {
       console.error('Error deleting post:', error);
+      
       dispatch(addNotification({
         type: 'error',
         title: 'Error al eliminar',
         message: 'No se pudo eliminar el post',
-        duration: 5000
+        duration: 5000,
+        persistent: false,
       }));
       throw error;
     }
-  }, [dispatch]);
+  }, [dispatch, posts]);
 
   const selectPost = useCallback((post: Post | null) => {
     dispatch(setSelectedPost(post));
