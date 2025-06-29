@@ -9,6 +9,8 @@ import {
   Button,
   Input,
   Spinner,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Search, Edit3, Trash2, ChevronLeft, ChevronRight, Eye, Plus, ArrowDown, ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -357,27 +359,45 @@ export default function PostTable() {
       {!loading && (
         <div className="flex flex-col space-y-4 mt-6">
 
+          
           <div className="flex items-center justify-center">
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600 font-medium">Mostrar:</span>
-              <div className="relative">
-                <select
-                  value={limit}
-                  onChange={(e) => handleLimitChange(parseInt(e.target.value))}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 cursor-pointer shadow-sm"
-                >
-                  {limitOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <ChevronRight size={14} className="text-gray-400 rotate-90" />
-                </div>
-              </div>
+              <Select
+                selectedKeys={[limit.toString()]}
+                onSelectionChange={(keys) => {
+                  const selected = Array.from(keys)[0] as string;
+                  handleLimitChange(parseInt(selected));
+                }}
+                size="sm"
+                variant="bordered"
+                classNames={{
+                  base: "w-40",
+                  trigger: "h-9 min-h-unit-9 bg-white border-gray-300 hover:border-gray-400 data-[hover=true]:border-gray-400 data-[focus=true]:border-black data-[focus=true]:ring-2 data-[focus=true]:ring-black/20 transition-all duration-200",
+                  value: "text-sm text-gray-700 font-medium",
+                  selectorIcon: "text-gray-400",
+                  popoverContent: "bg-white border border-gray-200 shadow-lg",
+                  listbox: "p-0",
+                }}
+                placeholder="Seleccionar"
+                aria-label="Posts por página"
+              >
+                {limitOptions.map((option) => (
+                  <SelectItem 
+                    key={option.value} 
+                    classNames={{
+                      base: "  data-[selected=true]:bg-black data-[selected=true]:text-white",
+                      title: "text-sm font-medium",
+                    }}
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
             </div>
           </div>
+          
+
 
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div className="flex items-center text-sm text-gray-600 order-2 lg:order-1">
