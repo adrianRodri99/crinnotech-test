@@ -202,26 +202,23 @@ export default function PostTable() {
 
       <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm w-full sm:w-4/12">
-          <Search className="text-gray-400 ml-3" size={18} />
+
           <Input
             placeholder="Buscar posts..."
             value={searchQuery}
+            startContent={<Search className="text-gray-400" size={18} />}
             onChange={(e) => handleSearch(e.target.value)}
             className="max-w-md"
-            classNames={{
-              input: "text-black py-2 px-4 outline-none focus:outline-none",
-              inputWrapper: 'ring-0 focus:ring-0 focus-visible:ring-0 outline-none focus:outline-none',
-            }}
           />
         </div>
 
         <Button
           onPress={handleOpenCreateModal}
-          className="flex items-center justify-center gap-2 p-3 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 cursor-pointer rounded-md shadow transition-colors"
+          variant="solid"
         >
           <Plus size={20} className="text-black" />
           <span className="text-black text-base font-semibold">
-            <span className="hidden sm:inline">Crear Post</span>
+            <span className="">Crear Post</span>
           </span>
         </Button>
       </div>
